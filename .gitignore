@@ -205,3 +205,78 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Project specific ignores
+# Claude Code
+.claude/
+.trae/
+
+# Data and cache directories
+data/
+cache/
+logs/
+temp/
+tmp/
+
+# Configuration files with sensitive information
+config.json
+secrets.json
+credentials.json
+.env.local
+.env.production
+
+# OS specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Windows specific
+desktop.ini
+
+# Search index files
+*.idx
+*.index
+search_index/
+
+# Downloaded documents and content
+downloads/
+documents/
+content/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Log files
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+nul
+
+# Test artifacts
+test_reports/
+test_artifacts/
+
+# MCP and API runtime files
+*.pid
+*.sock
+runtime/
+state/
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Local development files
+README_TEST.md
+check_index.py
+test_fixes.py
