@@ -7,11 +7,9 @@
 
 import asyncio
 import json
-from pathlib import Path
 
 from core import SearchFlow
 from services import WhooshSearchEngine
-from utils import logger
 
 
 def print_results(results: dict, title: str = "搜索结果"):
@@ -187,11 +185,11 @@ def test_index_stats():
     search_engine = WhooshSearchEngine()
     stats = search_engine.get_index_stats()
 
-    print(f"\n索引统计:")
+    print("\n索引统计:")
     print(f"文档总数: {stats.get('total_docs', 0)}")
     print(f"索引目录: {stats.get('index_dir', 'N/A')}")
     print(f"评分算法: {stats.get('scorer', 'N/A')}")
-    print(f"\n字段信息:")
+    print("\n字段信息:")
     for field_name, field_info in stats.get("schema_fields", {}).items():
         print(f"  {field_name}:")
         print(f"    类型: {field_info.get('type', 'N/A')}")
@@ -207,7 +205,7 @@ async def test_system_stats():
     search_flow = SearchFlow()
     stats = search_flow.get_stats()
 
-    print(f"\n系统统计:")
+    print("\n系统统计:")
     print(json.dumps(stats, indent=2, ensure_ascii=False))
 
 

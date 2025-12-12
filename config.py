@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import Dict, List
 
 # 项目根目录
 ROOT_DIR = Path(__file__).parent
@@ -42,7 +41,7 @@ REQUEST_HEADERS = {
     "X-Meilisearch-Client": "Meilisearch Vuepress (v0.13.0) ; Meilisearch docs-searchbar.js (v2.5.0) ; Meilisearch JavaScript (v0.30.0)",
     "sec-ch-ua": '"Chromium";v="142", "Google Chrome";v="142", "Not_A Brand";v="99"',
     "sec-ch-ua-mobile": "?0",
-    "sec-ch-ua-platform": '"Windows"'
+    "sec-ch-ua-platform": '"Windows"',
 }
 
 # 文档下载请求头
@@ -60,7 +59,7 @@ DOC_DOWNLOAD_HEADERS = {
     "Upgrade-Insecure-Requests": "1",
     "sec-ch-ua": '"Chromium";v="142", "Google Chrome";v="142", "Not_A Brand";v="99"',
     "sec-ch-ua-mobile": "?0",
-    "sec-ch-ua-platform": '"Windows"'
+    "sec-ch-ua-platform": '"Windows"',
 }
 
 # 并发下载配置
@@ -75,7 +74,7 @@ WHOOSH_SCHEMA_CONFIG = {
     "code_blocks": "TEXT",
     "tags": "KEYWORD",
     "url": "ID",
-    "file_path": "ID"
+    "file_path": "ID",
 }
 
 # 缓存配置

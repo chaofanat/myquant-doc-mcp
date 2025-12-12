@@ -1,6 +1,6 @@
+import re
 from pathlib import Path
 from typing import Any, Dict, List
-import re
 
 import jieba
 import jieba.analyse
@@ -8,7 +8,6 @@ from bs4 import BeautifulSoup
 from whoosh import index
 from whoosh.analysis import Token, Tokenizer
 from whoosh.fields import ID, KEYWORD, TEXT, Schema
-from whoosh.highlight import ContextFragmenter, HtmlFormatter
 from whoosh.qparser import MultifieldParser, OrGroup, QueryParser
 from whoosh.query import And, Every, Or
 from whoosh.scoring import BM25F
@@ -264,7 +263,8 @@ class WhooshSearchEngine:
             for table in main_content.find_all("table"):
                 for row in table.find_all("tr"):
                     cells = [
-                        td.get_text(strip=True) for td in row.find_all(["td", "th"])
+                        str(td.get_text(strip=True))
+                        for td in row.find_all(["td", "th"])
                     ]
                     if cells:
                         content_parts.append(" | ".join(cells))
@@ -313,9 +313,13 @@ class WhooshSearchEngine:
             meta_content = keywords_meta.get("content")
             if meta_content and isinstance(meta_content, str):
                 if "、" in meta_content:
-                    tags = [tag.strip() for tag in meta_content.split("、") if tag.strip()]
+                    tags = [
+                        tag.strip() for tag in meta_content.split("、") if tag.strip()
+                    ]
                 else:
-                    tags = [tag.strip() for tag in meta_content.split(",") if tag.strip()]
+                    tags = [
+                        tag.strip() for tag in meta_content.split(",") if tag.strip()
+                    ]
 
         # 如果没有keywords meta标签，尝试从内容中提取关键词
         if not tags:
@@ -324,7 +328,7 @@ class WhooshSearchEngine:
                 keywords = jieba.analyse.extract_tags(
                     content, topK=10, withWeight=False
                 )
-                tags = keywords[:5]  # 只取前5个
+                tags = [str(k) for k in keywords[:5]]  # 只取前5个，确保是字符串
             except Exception as e:
                 logger.debug(f"关键词提取失败: {e}")
 
@@ -333,7 +337,7 @@ class WhooshSearchEngine:
             "content": content,
             "headings": headings_text,
             "code_blocks": code_blocks_text,
-            "tags": ",".join(tags),
+            "tags": ",".join(str(t) for t in tags),  # 确保所有元素都是字符串
             "url": url,
             "file_path": str(file_path),
         }
@@ -436,7 +440,7 @@ class WhooshSearchEngine:
                 query = parser.parse(keyword)
 
             results = searcher.search(query, limit=max_results * 2)  # 多取一些结果
-            return self._format_results(list(results), keyword, searcher)  # type: ignore
+            return self._format_results(list(results), keyword, searcher)
 
     def boolean_search(
         self, query_string: str, max_results: int = 10
@@ -476,7 +480,9 @@ class WhooshSearchEngine:
                         logger.info(
                             f"使用简化查询: '{cleaned_query.strip()}' 替代原查询"
                         )
-                        return self._format_results(results, query_string, searcher)
+                        return self._format_results(
+                            list(results), query_string, searcher
+                        )
                     else:
                         return {
                             "query": query_string,
@@ -512,7 +518,7 @@ class WhooshSearchEngine:
             query = Or(queries)
 
             results = searcher.search(query, limit=max_results * 2)
-            return self._format_results(results, phrase, searcher)
+            return self._format_results(list(results), phrase, searcher)
 
     def fuzzy_search(
         self, term: str, max_distance: int = 2, max_results: int = 10
@@ -530,7 +536,7 @@ class WhooshSearchEngine:
             query = Or(queries)
 
             results = searcher.search(query, limit=max_results * 2)
-            return self._format_results(results, term, searcher)
+            return self._format_results(list(results), term, searcher)
 
     def tag_search(
         self, tag: str, keyword: str = "", max_results: int = 10
@@ -555,17 +561,13 @@ class WhooshSearchEngine:
                 query = tag_query
 
             results = searcher.search(query, limit=max_results * 2)
-            return self._format_results(results, f"tag:{tag} {keyword}", searcher)
+            return self._format_results(list(results), f"tag:{tag} {keyword}", searcher)
 
     def _format_results(
         self, results: List[Any], original_query: str, searcher=None
     ) -> Dict[str, Any]:
         """格式化搜索结果，使用Whoosh的高亮功能"""
         formatted_results = []
-
-        # 配置高亮器
-        fragmenter = ContextFragmenter(maxchars=300, surround=50)
-        formatter = HtmlFormatter(tagname="mark", between="...")
 
         for hit in results:
             # 安全获取字段值
